@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
+  // Public marketing landing
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+  },
   // Auth (public)
   {
     path: 'login',
@@ -13,7 +19,7 @@ export const routes: Routes = [
   },
   // App (authenticated)
   {
-    path: '',
+    path: 'app',
     canActivate: [AuthGuard],
     loadComponent: () => import('./layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
     children: [
@@ -51,5 +57,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent)
       }
     ]
-  }
+  },
+  // Wildcard: any unknown URL -> landing
+  { path: '**', redirectTo: '' }
 ];

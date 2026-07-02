@@ -9,6 +9,7 @@ import com.utp.myapp.tenant.infraestructure.persistence.jpa.repositories.JPATena
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -38,5 +39,12 @@ public class TenantRepositoryAdapter implements ITenantRepository {
     public boolean existsById(TenantId id) {
         return jpa.findAll().stream()
                 .anyMatch(e -> e.getTenantId().equals(id.value()));
+    }
+
+    @Override
+    public List<Tenant> findAll() {
+        return jpa.findAll().stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

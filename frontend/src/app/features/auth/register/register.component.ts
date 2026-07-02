@@ -51,7 +51,7 @@ export class RegisterComponent {
     this.loading = true;
     this.errorMessage = '';
     this.authService.register(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/app/dashboard']),
       error: () => { this.errorMessage = 'Error al registrarse'; this.loading = false; }
     });
   }

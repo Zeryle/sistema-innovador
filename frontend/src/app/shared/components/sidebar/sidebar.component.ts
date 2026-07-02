@@ -15,7 +15,9 @@ interface NavItem {
   template: `
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
       <div class="p-6 border-b border-gray-100">
-        <h2 class="text-lg font-bold text-primary-700">🔧 AutoTaller</h2>
+        <a routerLink="/app/dashboard" class="block">
+          <h2 class="text-lg font-bold text-primary-700">🔧 AutoTaller</h2>
+        </a>
       </div>
       <nav class="flex-1 p-4 space-y-1">
         @for (item of navItems; track item.route) {
@@ -38,20 +40,20 @@ interface NavItem {
 })
 export class SidebarComponent {
   navItems: NavItem[] = [
-    { label: 'Dashboard', route: '/dashboard', icon: '📊' },
-    { label: 'Clientes', route: '/customers', icon: '👥' },
-    { label: 'Vehículos', route: '/vehicles', icon: '🚗' },
-    { label: 'Órdenes', route: '/work-orders', icon: '🔧' },
-    { label: 'Recordatorios', route: '/reminders', icon: '⏰' },
-    { label: 'Catálogo', route: '/catalog', icon: '📋' },
-    { label: 'Analíticas', route: '/analytics', icon: '📈' },
-    { label: 'Configuración', route: '/settings', icon: '⚙️' }
+    { label: 'Dashboard', route: '/app/dashboard', icon: '📊' },
+    { label: 'Clientes', route: '/app/customers', icon: '👥' },
+    { label: 'Vehículos', route: '/app/vehicles', icon: '🚗' },
+    { label: 'Órdenes', route: '/app/work-orders', icon: '🔧' },
+    { label: 'Recordatorios', route: '/app/reminders', icon: '⏰' },
+    { label: 'Catálogo', route: '/app/catalog', icon: '📋' },
+    { label: 'Analíticas', route: '/app/analytics', icon: '📈' },
+    { label: 'Configuración', route: '/app/settings', icon: '⚙️' }
   ];
 
   constructor(private authService: AuthService) {}
 
   logout(): void {
     this.authService.logout();
-    window.location.href = '/login';
+    window.location.href = '/';
   }
 }

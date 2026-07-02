@@ -43,3 +43,6 @@ generate_doc.py
 # Archivos del proyecto
 sistema-innovador.zip
 uploads/
+.hermes-create-repo.sh
+UTP*.docx
+UTP*.bak.docx
