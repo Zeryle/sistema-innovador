@@ -1,9 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [],
+  imports: [NgClass],
   template: `
     <div class="card overflow-hidden">
       @if (showSearch) {
@@ -31,11 +32,11 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
                   <td class="px-4 py-3 text-sm text-gray-700">{{ row[col.key] }}</td>
                 }
                 @if (actions.length > 0) {
-                  <td class="px-4 py-3 text-right">
+                  <td class="px-4 py-3 text-right whitespace-nowrap">
                     @for (action of actions; track action.label) {
                       <button (click)="onAction(action.label, row)"
-                              class="ml-2 text-xs px-3 py-1 rounded"
-                              [class]="action.class || 'btn-primary'">
+                              class="ml-2 text-xs px-3 py-1 rounded transition"
+                              [ngClass]="action.class || 'btn-primary'">
                         {{ action.label }}
                       </button>
                     }

@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-vehicles',
   standalone: true,
-  imports: [DataTableComponent, FormsModule],
+  imports: [DataTableComponent, FormsModule, CommonModule, ModalComponent],
   template: `
     <div>
       <div class="flex justify-between items-center mb-6">
@@ -47,6 +49,47 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
         (actionClick)="onAction($event)">
       </app-data-table>
     </div>
+
+    <app-modal [open]="!!viewing"
+               title="Detalle del vehículo"
+               tone="info"
+               icon="🚗"
+               size="md"
+               cancelLabel="Cerrar"
+               (close)="viewing = null">
+      <div *ngIf="viewing" class="space-y-3">
+        <div class="flex items-baseline gap-3">
+          <div class="text-3xl font-extrabold text-gray-900 font-mono">{{ viewing.plate }}</div>
+          <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">{{ viewing.year }}</span>
+        </div>
+        <div>
+          <div class="text-xs uppercase font-medium text-gray-500">Marca / Modelo</div>
+          <div class="text-lg font-semibold text-gray-900">{{ viewing.make }} {{ viewing.model }}</div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">Color</div>
+            <div class="text-sm text-gray-900">{{ viewing.color || '—' }}</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">Combustible</div>
+            <div class="text-sm text-gray-900">{{ viewing.fuelType || '—' }}</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">Kilometraje</div>
+            <div class="text-sm text-gray-900">{{ viewing.mileage ? viewing.mileage + ' km' : '—' }}</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">VIN</div>
+            <div class="text-sm text-gray-900 font-mono">{{ viewing.vin || '—' }}</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs uppercase font-medium text-gray-500">Propietario</div>
+          <div class="text-sm text-gray-900">{{ viewing.customerName || '—' }}</div>
+        </div>
+      </div>
+    </app-modal>
   `
 })
 export class VehiclesComponent implements OnInit {
@@ -63,6 +106,7 @@ export class VehiclesComponent implements OnInit {
   form = { plate: '', make: '', model: '', year: 2024, color: '', mileage: 0, customerId: 1, fuelType: 'GASOLINE' };
   message = '';
   ok = false;
+  viewing: any = null;
 
   constructor(private api: ApiService) {}
 
@@ -91,7 +135,7 @@ export class VehiclesComponent implements OnInit {
 
   onAction(event: { action: string; row: any }): void {
     if (event.action === 'Ver') {
-      alert(`Vehículo: ${event.row.plate}\n${event.row.make} ${event.row.model} (${event.row.year})\nCliente: ${event.row.customerName}`);
+      this.viewing = event.row;
     }
   }
 }

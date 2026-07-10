@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-work-orders',
   standalone: true,
-  imports: [DataTableComponent, FormsModule],
+  imports: [DataTableComponent, FormsModule, CommonModule, ModalComponent],
   template: `
     <div>
       <div class="flex justify-between items-center mb-6">
@@ -39,6 +41,93 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
       <app-data-table [columns]="columns" [data]="workOrders" [actions]="actions" [showSearch]="true"
         (actionClick)="onAction($event)"></app-data-table>
     </div>
+
+    <app-modal [open]="!!viewing"
+               [title]="viewing ? 'Orden #' + viewing.id : ''"
+               tone="info"
+               icon="🔧"
+               size="lg"
+               cancelLabel="Cerrar"
+               (close)="viewing = null">
+      <div *ngIf="viewing" class="space-y-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+                [class.bg-yellow-100]="viewing.status === 'RECEIVED'"
+                [class.text-yellow-700]="viewing.status === 'RECEIVED'"
+                [class.bg-blue-100]="viewing.status === 'IN_PROGRESS'"
+                [class.text-blue-700]="viewing.status === 'IN_PROGRESS'"
+                [class.bg-purple-100]="viewing.status === 'WAITING_PARTS'"
+                [class.text-purple-700]="viewing.status === 'WAITING_PARTS'"
+                [class.bg-green-100]="viewing.status === 'COMPLETED'"
+                [class.text-green-700]="viewing.status === 'COMPLETED'">
+            {{ viewing.status }}
+          </span>
+          <span class="text-sm text-gray-500">
+            {{ viewing.vehiclePlate }} · {{ viewing.customerName }}
+          </span>
+        </div>
+
+        <div>
+          <div class="text-xs uppercase font-medium text-gray-500">Descripción</div>
+          <div class="text-sm text-gray-900">{{ viewing.description || '—' }}</div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">Costo estimado</div>
+            <div class="text-lg font-bold text-gray-900">S/ {{ viewing.estimatedCost || 0 }}</div>
+          </div>
+          <div *ngIf="viewing.finalCost">
+            <div class="text-xs uppercase font-medium text-gray-500">Costo final</div>
+            <div class="text-lg font-bold text-green-700">S/ {{ viewing.finalCost }}</div>
+          </div>
+          <div *ngIf="viewing.startDate">
+            <div class="text-xs uppercase font-medium text-gray-500">Inicio</div>
+            <div class="text-sm text-gray-900">{{ viewing.startDate | date:'short' }}</div>
+          </div>
+        </div>
+
+        <div *ngIf="viewing.diagnosticNotes">
+          <div class="text-xs uppercase font-medium text-gray-500">Notas de diagnóstico</div>
+          <div class="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">{{ viewing.diagnosticNotes }}</div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-xs uppercase font-medium text-gray-500">
+              Historial del vehículo ({{ viewing.vehiclePlate }})
+              <span class="ml-2 text-gray-400 normal-case">— {{ viewing.history?.length || 0 }} órdenes previas</span>
+            </div>
+            <span *ngIf="historyLoading" class="text-xs text-gray-400 italic">cargando…</span>
+          </div>
+          <div *ngIf="viewing.history && viewing.history.length > 0" class="space-y-1 max-h-48 overflow-y-auto">
+            <div *ngFor="let h of viewing.history; let i = index"
+                 class="flex items-center justify-between text-sm py-2 px-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono text-gray-400">#{{ h.id }}</span>
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium"
+                      [class.bg-yellow-100]="h.status === 'RECEIVED'"
+                      [class.text-yellow-700]="h.status === 'RECEIVED'"
+                      [class.bg-blue-100]="h.status === 'IN_PROGRESS'"
+                      [class.text-blue-700]="h.status === 'IN_PROGRESS'"
+                      [class.bg-purple-100]="h.status === 'WAITING_PARTS'"
+                      [class.text-purple-700]="h.status === 'WAITING_PARTS'"
+                      [class.bg-green-100]="h.status === 'COMPLETED'"
+                      [class.text-green-700]="h.status === 'COMPLETED'">
+                  {{ h.status }}
+                </span>
+                <span class="text-gray-900 truncate max-w-xs">{{ h.description }}</span>
+              </div>
+              <div class="text-xs text-gray-500 whitespace-nowrap">
+                S/ {{ h.estimatedCost || 0 }} · {{ h.createdAt?.substring(0, 10) || 'N/A' }}
+              </div>
+            </div>
+          </div>
+          <div *ngIf="viewing.history && viewing.history.length === 0"
+               class="text-sm text-gray-500 italic">No hay órdenes previas para este vehículo.</div>
+        </div>
+      </div>
+    </app-modal>
   `
 })
 export class WorkOrdersComponent implements OnInit {
@@ -62,6 +151,8 @@ export class WorkOrdersComponent implements OnInit {
   form = { customerId: 1, vehicleId: 1, description: '', estimatedCost: 0 };
   message = '';
   ok = false;
+  viewing: any = null;
+  historyLoading = false;
 
   constructor(private api: ApiService) {}
 
@@ -107,18 +198,17 @@ export class WorkOrdersComponent implements OnInit {
 
   onAction(event: { action: string; row: any }): void {
     if (event.action === 'Ver') {
+      // Open the modal immediately with the row, then fetch history async.
+      this.viewing = { ...event.row, history: [] };
+      this.historyLoading = true;
       this.api.get<any[]>(`/work-orders/vehicle/${event.row.vehicleId}`).subscribe({
         next: (history) => {
-          let hist = `Historial del Vehículo #${event.row.vehicleId}\n\n`;
-          hist += `Orden #${event.row.id}: ${event.row.status} — ${event.row.description}\n`;
-          hist += `Costo est.: S/ ${event.row.estimatedCost || 0}\n\n`;
-          hist += `--- Historial Completo (${history.length} órdenes) ---\n`;
-          history.forEach((h: any, i: number) => {
-            hist += `${i+1}. [${h.status}] ${h.description} — S/ ${h.estimatedCost || 0} (${h.createdAt?.substring(0,10) || 'N/A'})\n`;
-          });
-          alert(hist);
+          if (this.viewing && this.viewing.id === event.row.id) {
+            this.viewing = { ...this.viewing, history };
+          }
+          this.historyLoading = false;
         },
-        error: () => alert(`Orden #${event.row.id}\n${event.row.status}\n${event.row.description}\nCosto: S/ ${event.row.estimatedCost || 0}`)
+        error: () => { this.historyLoading = false; }
       });
     }
   }

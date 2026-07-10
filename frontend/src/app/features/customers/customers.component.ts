@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [DataTableComponent, FormsModule],
+  imports: [DataTableComponent, FormsModule, CommonModule, ModalComponent],
   template: `
     <div>
       <div class="flex justify-between items-center mb-6">
@@ -39,6 +41,43 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
         (actionClick)="onAction($event)">
       </app-data-table>
     </div>
+
+    <app-modal [open]="!!viewing"
+               title="Detalle del cliente"
+               tone="info"
+               icon="👤"
+               size="md"
+               cancelLabel="Cerrar"
+               (close)="viewing = null">
+      <div *ngIf="viewing" class="space-y-3">
+        <div>
+          <div class="text-xs uppercase font-medium text-gray-500">Nombre completo</div>
+          <div class="text-lg font-semibold text-gray-900">{{ viewing.fullName }}</div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">DNI</div>
+            <div class="text-sm text-gray-900">{{ viewing.dni || '—' }}</div>
+          </div>
+          <div>
+            <div class="text-xs uppercase font-medium text-gray-500">Teléfono</div>
+            <div class="text-sm text-gray-900">{{ viewing.phone || '—' }}</div>
+          </div>
+          <div class="col-span-2">
+            <div class="text-xs uppercase font-medium text-gray-500">Email</div>
+            <div class="text-sm text-gray-900">{{ viewing.email || '—' }}</div>
+          </div>
+        </div>
+        <div *ngIf="viewing.notes">
+          <div class="text-xs uppercase font-medium text-gray-500">Notas</div>
+          <div class="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">{{ viewing.notes }}</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase font-medium text-gray-500">Vehículos</div>
+          <div class="text-sm text-gray-900">{{ viewing.vehicleCount || 0 }} registrado(s)</div>
+        </div>
+      </div>
+    </app-modal>
   `
 })
 export class CustomersComponent implements OnInit {
@@ -54,6 +93,7 @@ export class CustomersComponent implements OnInit {
   form = { name: '', lastName: '', dni: '', email: '', phone: '', notes: '' };
   message = '';
   ok = false;
+  viewing: any = null;
 
   constructor(private api: ApiService) {}
 
@@ -82,7 +122,7 @@ export class CustomersComponent implements OnInit {
 
   onAction(event: { action: string; row: any }): void {
     if (event.action === 'Ver') {
-      alert(`Cliente: ${event.row.fullName}\nDNI: ${event.row.dni}\nTel: ${event.row.phone}\nEmail: ${event.row.email}`);
+      this.viewing = event.row;
     }
   }
 }
