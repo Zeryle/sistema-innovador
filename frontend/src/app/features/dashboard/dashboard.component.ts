@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
 import { ApiService } from '../../core/services/api.service';
+import { BillingService, SubscriptionStatus } from '../../core/services/billing.service';
 
 interface DashboardStats {
   activeOrders: number;
@@ -104,6 +105,75 @@ interface ReminderRow {
             </div>
             <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl">⏰</div>
           </div>
+        </div>
+      </div>
+
+      <!-- PLAN ACTUAL -->
+      <div class="card flex flex-col md:flex-row md:items-center gap-4">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+               [class.bg-gray-100]="subscription?.currentPlan === 'FREE'"
+               [class.bg-blue-100]="subscription?.currentPlan === 'BASIC'"
+               [class.bg-purple-100]="subscription?.currentPlan === 'PREMIUM'">
+            <span [class.text-gray-700]="subscription?.currentPlan === 'FREE'"
+                  [class.text-blue-700]="subscription?.currentPlan === 'BASIC'"
+                  [class.text-purple-700]="subscription?.currentPlan === 'PREMIUM'">
+              {{ subscription?.currentPlan === 'FREE' ? '🆓' : (subscription?.currentPlan === 'PREMIUM' ? '💎' : '⚡') }}
+            </span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-lg font-semibold text-gray-900">Tu plan actual</h2>
+              <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+                    [class.bg-gray-200]="subscription?.currentPlan === 'FREE'"
+                    [class.text-gray-700]="subscription?.currentPlan === 'FREE'"
+                    [class.bg-blue-100]="subscription?.currentPlan === 'BASIC'"
+                    [class.text-blue-700]="subscription?.currentPlan === 'BASIC'"
+                    [class.bg-purple-100]="subscription?.currentPlan === 'PREMIUM'"
+                    [class.text-purple-700]="subscription?.currentPlan === 'PREMIUM'">
+                {{ subscription?.currentPlanName || 'Cargando…' }}
+              </span>
+            </div>
+            <p class="text-sm text-gray-600">
+              <ng-container *ngIf="subscription?.currentPlan === 'FREE'">
+                Plan gratuito · Hasta {{ subscription?.maxCustomers }} clientes
+              </ng-container>
+              <ng-container *ngIf="subscription?.currentPlan === 'BASIC'">
+                S/ {{ subscription?.currentMonthlyPrice | number:'1.0-0' }} / mes ·
+                {{ subscription?.whatsappEnabled ? 'WhatsApp habilitado' : 'Sin WhatsApp' }} ·
+                {{ subscription?.analyticsEnabled ? 'Analítica activa' : 'Sin analítica' }}
+              </ng-container>
+              <ng-container *ngIf="subscription?.currentPlan === 'PREMIUM'">
+                S/ {{ subscription?.currentMonthlyPrice | number:'1.0-0' }} / mes ·
+                Soporte prioritario · WhatsApp + analítica
+              </ng-container>
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature usage / over-limit warnings -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span *ngIf="subscription?.overCustomerLimit"
+                class="px-2 py-1 rounded-full bg-red-100 text-red-700 font-medium">
+            ⚠ Excediste el límite de clientes
+          </span>
+          <span *ngIf="subscription?.overWorkOrderLimit"
+                class="px-2 py-1 rounded-full bg-red-100 text-red-700 font-medium">
+            ⚠ Excediste el límite de órdenes / mes
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a routerLink="/pricing"
+             class="px-4 py-2 rounded-lg text-sm font-medium text-primary-700 hover:bg-primary-50 transition">
+            Ver planes
+          </a>
+          <a *ngIf="subscription?.currentPlan !== 'PREMIUM' && (subscription?.availableUpgrades?.length || 0) > 0"
+             routerLink="/pricing"
+             [queryParams]="{from: 'dashboard'}"
+             class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition shadow-sm">
+            Subir de plan
+          </a>
         </div>
       </div>
 
@@ -244,6 +314,7 @@ export class DashboardComponent implements OnInit {
 
   recentOrders: WorkOrderRow[] = [];
   upcomingReminders: ReminderRow[] = [];
+  subscription: SubscriptionStatus | null = null;
 
   // % de órdenes activas vs totales (para barra de progreso)
   get activePercent(): number {
@@ -291,12 +362,20 @@ export class DashboardComponent implements OnInit {
     }
   };
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private billing: BillingService) {}
 
   ngOnInit(): void {
     this.loadStats();
     this.loadRecentOrders();
     this.loadUpcomingReminders();
+    this.loadSubscription();
+  }
+
+  loadSubscription(): void {
+    this.billing.getSubscription().subscribe({
+      next: (s) => this.subscription = s,
+      error: (err) => console.error('Error cargando suscripción', err)
+    });
   }
 
   loadStats(): void {
