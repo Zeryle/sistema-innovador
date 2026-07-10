@@ -63,6 +63,23 @@ export const routes: Routes = [
       }
     ]
   },
+
+  // Billing flow (checkout success/cancel are public so the user gets redirected
+  // to them by the SPA without a session in some paths; the checkout/pay page
+  // also lives outside /app because it must be reachable before the user can
+  // log into the app on a different device).
+  {
+    path: 'billing/checkout/:id',
+    loadComponent: () => import('./features/checkout/pay/checkout-pay.component').then(m => m.CheckoutPayComponent)
+  },
+  {
+    path: 'billing/success',
+    loadComponent: () => import('./features/checkout/success/checkout-success.component').then(m => m.CheckoutSuccessComponent)
+  },
+  {
+    path: 'billing/cancel',
+    loadComponent: () => import('./features/checkout/cancel/checkout-cancel.component').then(m => m.CheckoutCancelComponent)
+  },
   // Wildcard: any unknown URL -> landing
   { path: '**', redirectTo: '' }
 ];

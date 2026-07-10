@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 import { PublicApiService, PublicPlan } from '../../core/services/public-api.service';
+import { BillingService } from '../../core/services/billing.service';
 
 @Component({
   selector: 'app-pricing',
@@ -104,9 +106,8 @@ import { PublicApiService, PublicPlan } from '../../core/services/public-api.ser
               Empezar gratis
             </a>
             <a *ngIf="plan.code !== 'FREE'"
-               routerLink="/register"
-               [queryParams]="{plan: plan.code}"
-               class="mt-6 w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition"
+               (click)="onChoose(plan.code)"
+               class="mt-6 w-full inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition cursor-pointer"
                [class.bg-primary-600]="plan.code !== 'BASIC'"
                [class.text-white]="plan.code !== 'BASIC'"
                [class.hover:bg-primary-700]="plan.code !== 'BASIC'"
@@ -216,7 +217,31 @@ export class PricingComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private publicApi: PublicApiService) {}
+  constructor(private publicApi: PublicApiService, private billing: BillingService, private router: Router, private location: Location) {}
+
+  onChoose(code: 'FREE' | 'BASIC' | 'PREMIUM'): void {
+    // Si está autenticado, va directo al checkout. Si no, al register.
+    if (localStorage.getItem('token')) {
+      this.billing.startCheckout(code, '/billing/success', '/billing/cancel').subscribe({
+        next: (checkout) => {
+          console.log('[pricing.onChoose] checkout.url =', JSON.stringify(checkout.url));
+          console.log('[pricing.onChoose] window.location =', window.location.href);
+          // The mock gateway returns an SPA path like
+          //   /billing/checkout/cs_xxx?success_url=...&cancel_url=...
+          // We push that string directly onto the history. Using router.navigate()
+          // was causing it to land on '/' with the query string — likely because
+          // Angular Router treats a leading '/' as the SPA root and reinterprets
+          // query params. window.location.assign does a real navigation, which
+          // works for a SPA-served route too (the URL is the same string the
+          // backend's SpaForwardController will match).
+          window.location.assign(checkout.url);
+        },
+        error: () => this.router.navigate(['/register'], { queryParams: { plan: code } })
+      });
+    } else {
+      this.router.navigate(['/register'], { queryParams: { plan: code } });
+    }
+  }
 
   ngOnInit(): void {
     this.publicApi.getPlans().subscribe({
