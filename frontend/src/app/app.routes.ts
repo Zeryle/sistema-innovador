@@ -8,6 +8,11 @@ export const routes: Routes = [
     pathMatch: 'full',
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
   },
+  // Public pricing
+  {
+    path: 'pricing',
+    loadComponent: () => import('./features/pricing/pricing.component').then(m => m.PricingComponent)
+  },
   // Auth (public)
   {
     path: 'login',

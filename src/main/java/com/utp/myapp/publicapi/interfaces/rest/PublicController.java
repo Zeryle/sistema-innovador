@@ -5,12 +5,14 @@ import com.utp.myapp.catalog.domain.model.repository.IPartCategoryRepository;
 import com.utp.myapp.shared.infraestructure.web.ApiResponse;
 import com.utp.myapp.tenant.domain.model.aggregates.Tenant;
 import com.utp.myapp.tenant.domain.model.repository.ITenantRepository;
+import com.utp.myapp.tenant.domain.model.valueobjects.SubscriptionPlan;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,5 +62,37 @@ public class PublicController {
                 })
                 .toList();
         return ResponseEntity.ok(ApiResponse.ok(roots));
+    }
+
+    /**
+     * Returns the full catalog of subscription tiers (FREE, BASIC, PREMIUM) with
+     * pricing, customer caps, and feature flags. Unauthenticated — used by the
+     * public landing pricing page.
+     */
+    @GetMapping("/plans")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getPlans() {
+        List<Map<String, Object>> plans = Arrays.stream(SubscriptionPlan.values())
+                .map(plan -> {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("code", plan.name());
+                    m.put("name", plan.displayName());
+                    m.put("tagline", plan.tagline());
+                    m.put("monthlyPrice", plan.monthlyPrice());
+                    m.put("currency", plan.currency());
+                    m.put("maxCustomers", plan.maxCustomers() == Integer.MAX_VALUE
+                            ? null : plan.maxCustomers());
+                    m.put("maxCustomersDisplay", plan.displayCustomersLimit());
+                    m.put("maxWorkOrdersPerMonth", plan.maxWorkOrdersPerMonth() == Integer.MAX_VALUE
+                            ? null : plan.maxWorkOrdersPerMonth());
+                    m.put("maxWorkOrdersDisplay", plan.displayWorkOrdersLimit());
+                    m.put("maxAdminUsers", plan.maxAdminUsers());
+                    m.put("whatsappEnabled", plan.whatsappEnabled());
+                    m.put("analyticsEnabled", plan.analyticsEnabled());
+                    m.put("prioritySupport", plan.prioritySupport());
+                    m.put("features", plan.features());
+                    return m;
+                })
+                .toList();
+        return ResponseEntity.ok(ApiResponse.ok(plans));
     }
 }
