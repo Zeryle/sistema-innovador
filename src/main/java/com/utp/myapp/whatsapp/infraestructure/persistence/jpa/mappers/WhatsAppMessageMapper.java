@@ -1,7 +1,7 @@
-package com.utp.myapp.whatsapp.infrastructure.persistence.jpa.mappers;
+package com.utp.myapp.whatsapp.infraestructure.persistence.jpa.mappers;
 
 import com.utp.myapp.whatsapp.domain.model.aggregates.WhatsAppMessage;
-import com.utp.myapp.whatsapp.infrastructure.persistence.jpa.entities.WhatsAppMessageEntity;
+import com.utp.myapp.whatsapp.infraestructure.persistence.jpa.entities.WhatsAppMessageEntity;
 import org.springframework.stereotype.Component;
 
 @Component

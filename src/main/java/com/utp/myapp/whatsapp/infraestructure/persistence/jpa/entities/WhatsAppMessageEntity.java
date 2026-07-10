@@ -1,4 +1,4 @@
-package com.utp.myapp.whatsapp.infrastructure.persistence.jpa.entities;
+package com.utp.myapp.whatsapp.infraestructure.persistence.jpa.entities;
 
 import com.utp.myapp.shared.infraestructure.persistence.jpa.entities.BaseEntity;
 import com.utp.myapp.whatsapp.domain.model.valueobjects.MessageDirection;

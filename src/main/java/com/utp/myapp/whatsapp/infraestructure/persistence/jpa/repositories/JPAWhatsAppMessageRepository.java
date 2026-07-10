@@ -1,8 +1,8 @@
-package com.utp.myapp.whatsapp.infrastructure.persistence.jpa.repositories;
+package com.utp.myapp.whatsapp.infraestructure.persistence.jpa.repositories;
 
 import com.utp.myapp.whatsapp.domain.model.valueobjects.MessageDirection;
 import com.utp.myapp.whatsapp.domain.model.valueobjects.MessageStatus;
-import com.utp.myapp.whatsapp.infrastructure.persistence.jpa.entities.WhatsAppMessageEntity;
+import com.utp.myapp.whatsapp.infraestructure.persistence.jpa.entities.WhatsAppMessageEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

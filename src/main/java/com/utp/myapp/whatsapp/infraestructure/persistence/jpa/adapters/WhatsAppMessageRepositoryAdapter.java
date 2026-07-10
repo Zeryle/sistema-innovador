@@ -1,10 +1,10 @@
-package com.utp.myapp.whatsapp.infrastructure.persistence.jpa.adapters;
+package com.utp.myapp.whatsapp.infraestructure.persistence.jpa.adapters;
 
 import com.utp.myapp.whatsapp.domain.model.aggregates.WhatsAppMessage;
 import com.utp.myapp.whatsapp.domain.model.repository.IWhatsAppMessageRepository;
 import com.utp.myapp.whatsapp.domain.model.valueobjects.MessageDirection;
-import com.utp.myapp.whatsapp.infrastructure.persistence.jpa.mappers.WhatsAppMessageMapper;
-import com.utp.myapp.whatsapp.infrastructure.persistence.jpa.repositories.JPAWhatsAppMessageRepository;
+import com.utp.myapp.whatsapp.infraestructure.persistence.jpa.mappers.WhatsAppMessageMapper;
+import com.utp.myapp.whatsapp.infraestructure.persistence.jpa.repositories.JPAWhatsAppMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
