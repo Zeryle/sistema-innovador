@@ -1,7 +1,7 @@
 package com.utp.myapp.auth.domain.model.valueobjects;
 
 /**
- * User roles within a tenant.
+ * User roles.
  */
 public enum Role {
     OWNER,        // Dueño del taller — full access

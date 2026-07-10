@@ -13,8 +13,8 @@ public class AddressAssembler {
         }
         return new AddressDto(
                 address.street(),
-                address.city(),
                 address.number(),
+                address.city(),
                 address.country()
         );
     }

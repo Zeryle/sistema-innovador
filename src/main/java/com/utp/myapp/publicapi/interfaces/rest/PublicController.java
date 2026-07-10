@@ -15,10 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Public, unauthenticated endpoints used by the marketing landing page.
- * Returns real data from the database (no mock).
- */
 @RestController
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
@@ -27,10 +23,6 @@ public class PublicController {
     private final ITenantRepository tenantRepository;
     private final IPartCategoryRepository partCategoryRepository;
 
-    /**
-     * Returns the first available tenant's public business info
-     * (businessName, phone, ruc, logoUrl, plan). Safe to expose.
-     */
     @GetMapping("/tenant")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getTenant() {
         List<Tenant> all = tenantRepository.findAll();
@@ -48,10 +40,6 @@ public class PublicController {
         return ResponseEntity.ok(ApiResponse.ok(info));
     }
 
-    /**
-     * Returns only top-level (root) part categories with their subcategories
-     * inlined. Used by the landing page "store" section.
-     */
     @GetMapping("/categories")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getCategories() {
         List<PartCategory> all = partCategoryRepository.findAll();

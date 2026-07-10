@@ -35,6 +35,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/*.js").permitAll()
+                        .requestMatchers("/*.css").permitAll()
+                        .requestMatchers("/*.ico", "/*.png", "/*.svg", "/*.woff", "/*.woff2", "/*.ttf").permitAll()
+                        .requestMatchers("/styles/**", "/chunk-*.js", "/main-*.js", "/polyfills-*.js").permitAll()
+                        .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers(request ->
+                            !request.getRequestURI().startsWith("/api/")).permitAll()
+                        // Public API enrutado
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/api/webhook/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()

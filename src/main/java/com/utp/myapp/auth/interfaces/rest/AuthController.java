@@ -1,10 +1,12 @@
 package com.utp.myapp.auth.interfaces.rest;
 
 import com.utp.myapp.auth.application.command.LoginCommand;
+import com.utp.myapp.auth.application.command.RefreshTokenCommand;
 import com.utp.myapp.auth.application.command.RegisterUserCommand;
 import com.utp.myapp.auth.application.dto.LoginResponseDto;
 import com.utp.myapp.auth.application.dto.RegisterRequestDto;
 import com.utp.myapp.auth.application.handler.LoginCommandHandler;
+import com.utp.myapp.auth.application.handler.RefreshTokenCommandHandler;
 import com.utp.myapp.auth.application.handler.RegisterUserCommandHandler;
 import com.utp.myapp.shared.infraestructure.web.ApiResponse;
 import jakarta.validation.Valid;
@@ -20,6 +22,7 @@ public class AuthController {
 
     private final RegisterUserCommandHandler registerHandler;
     private final LoginCommandHandler loginHandler;
+    private final RefreshTokenCommandHandler refreshHandler;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<LoginResponseDto>> register(
@@ -42,5 +45,12 @@ public class AuthController {
             @RequestBody LoginCommand command) {
         LoginResponseDto response = loginHandler.handle(command);
         return ResponseEntity.ok(ApiResponse.ok(response, "Login successful"));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<LoginResponseDto>> refresh(
+            @RequestBody RefreshTokenCommand command) {
+        LoginResponseDto response = refreshHandler.handle(command);
+        return ResponseEntity.ok(ApiResponse.ok(response, "Token refreshed"));
     }
 }

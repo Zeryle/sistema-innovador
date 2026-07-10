@@ -82,6 +82,9 @@ public class JwtTokenProvider {
     public Long getUserIdFromToken(String token) {
         return getClaims(token).get("userId", Long.class);
     }
+    public String getTokenType(String token) {
+        return getClaims(token).get("type", String.class);
+    }
 
     private Claims getClaims(String token) {
         return Jwts.parser()

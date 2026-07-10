@@ -122,6 +122,30 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<!-- Copy the built Angular SPA bundle into src/main/resources/static/ so
+			     Spring Boot serves it from the JAR at the same / origin as the API. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-angular-bundle</id>
+						<phase>process-resources</phase>
+						<goals><goal>copy-resources</goal></goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/src/main/resources/static</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/frontend/dist/browser</directory>
+									<excludes>
+										<exclude>3rdpartylicenses.txt</exclude>
+									</excludes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

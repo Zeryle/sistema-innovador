@@ -11,12 +11,12 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AddressEmbeddable {
-    @Column(nullable = false)
+    @Column
     private String street;
-    @Column(nullable = false)
+    @Column
     private String number;
-    @Column(nullable = false)
+    @Column
     private String city;
-    @Column(nullable = false)
+    @Column
     private String country;
 }

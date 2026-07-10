@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía del Código — Sistema Innovador</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#161a22; --panel-2:#1c2230;
+    --ink:#e8ecf3; --muted:#9aa3b2; --accent:#7cc4ff;
+    --ok:#7ee0a8; --warn:#ffd166; --err:#ff7a90; --note:#9b8cff;
+    --border:#262d3a; --code:#0b0e14;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-wrap:break-word}
+  body{padding:32px clamp(16px, 4vw, 80px) 100px;max-width:1200px;margin:0 auto}
+  h1{font-size:30px;margin:0 0 8px}
+  h2{font-size:23px;margin:48px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  h3{font-size:18px;margin:32px 0 10px;color:var(--accent)}
+  h4{font-size:15px;margin:22px 0 8px;color:var(--note)}
+  p{margin:10px 0;color:#d6dbe5}
+  ul,ol{padding-left:24px;color:#d6dbe5}
+  li{margin:6px 0}
+  code{background:var(--code);padding:2px 6px;border-radius:4px;
+    font:13px/"JetBrains Mono",Consolas,Menlo,monospace;border:1px solid var(--border);color:#cfe8ff;
+    word-break:break-word;overflow-wrap:break-word}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:8px;
+    padding:14px 16px;overflow:auto;line-height:1.5;font:12.5px/"JetBrains Mono",Consolas,monospace;
+    color:#dfe6f1;max-width:100%}
+  pre code{background:none;border:0;padding:0;color:inherit;word-break:break-word;overflow-wrap:break-word}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid,.g2,.g3{min-width:0}
+  .grid>*,.g2>*,.g3>*{min-width:0}
+  @media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px 18px;min-width:0}
+  .card h3,.card h4{margin-top:0}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;
+    letter-spacing:.04em;text-transform:uppercase;font-weight:700;margin-right:4px;vertical-align:middle}
+  .pill.ok{background:#1f3a2b;color:var(--ok);border:1px solid #2f5a45}
+  .pill.warn{background:#3a3220;color:var(--warn);border:1px solid #5a4d2a}
+  .pill.err{background:#3a1f25;color:var(--err);border:1px solid #5a2a35}
+  .pill.note{background:#2a2746;color:var(--note);border:1px solid #4a457a}
+  .pill.path{background:#1d3550;color:#7cc4ff;border:1px solid #2c4a6b;font-family:"JetBrains Mono",monospace}
+  .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;margin-right:8px}
+  .tag.backend{background:#1d3550;color:#7cc4ff;border:1px solid #2c4a6b}
+  .tag.frontend{background:#3a2a55;color:#c9a8ff;border:1px solid #5a417a}
+  .tag.devops{background:#1f3a2b;color:var(--ok);border:1px solid #2f5a45}
+  .meta{color:var(--muted);font-size:13px}
+  .callout{border:1px solid var(--border);background:var(--panel);border-left:3px solid var(--accent);
+    border-radius:6px;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.ok{border-left-color:var(--ok)}
+  .callout.err{border-left-color:var(--err)}
+  .callout.note{border-left-color:var(--note)}
+  details{background:var(--panel);border:1px solid var(--border);border-radius:6px;
+    padding:8px 14px;margin:10px 0}
+  details summary{cursor:pointer;color:var(--accent);font-weight:600}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel-2);color:var(--accent)}
+  code.hl-kw{color:#ff8daf}
+  code.hl-str{color:#b9f29a}
+  code.hl-com{color:#7c8694;font-style:italic}
+  code.hl-cls{color:#ffd166}
+  code.hl-num{color:#c4a8ff}
+  #toc{background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    padding:16px 20px;margin:24px 0;font-size:14px;max-width:100%;min-width:0;overflow-wrap:break-word}
+  #toc ol{padding-left:18px;max-width:100%}
+  #toc a{color:var(--accent);text-decoration:none;word-break:break-word;overflow-wrap:break-word}
+  #toc a:hover{text-decoration:underline}
+  hr{border:0;border-top:1px solid var(--border);margin:40px 0}
+  strong{color:#fff}
+  blockquote{background:var(--panel-2);border-left:3px solid var(--note);
+    padding:10px 16px;margin:14px 0;border-radius:4px;color:#d6dbe5;font-style:italic}
+</style>
+</head>
+<body>
+
+<h1>📖 Guía del Código — Sistema Innovador (AutoTaller SaaS)</h1>
+<p class="meta">
+  Documento de referencia sobre el código fuente del proyecto.
+  Cubre las decisiones de diseño, los flujos críticos y los detalles no obvios que hay que saber para no romperlo.
+  Lee esto antes de hacer cambios.
+</p>
+
+<div id="toc">
+  <h3>Tabla de contenidos</h3>
+  <ol>
+    <li><a href="#vision">Visión general del sistema</a></li>
+    <li><a href="#stack">Stack técnico y versiones</a></li>
+    <li><a href="#backend">Backend — arquitectura hexagonal</a>
+      <ol>
+        <li><a href="#backend-bounded">Bounded contexts (11 carpetas)</a></li>
+        <li><a href="#backend-layers">Las 4 capas por contexto</a></li>
+        <li><a href="#backend-endpoints">Endpoints REST completos</a></li>
+        <li><a href="#backend-shared">El paquete <code>shared</code> — lo que todo el sistema usa</a></li>
+        <li><a href="#backend-auth">Cómo funciona la auth JWT</a></li>
+        <li><a href="#backend-multi">Multi-tenant real (no es marketing)</a></li>
+        <li><a href="#backend-cqrs">Patrón CQRS en comandos y queries</a></li>
+      </ol>
+    </li>
+    <li><a href="#frontend">Frontend Angular — estructura</a>
+      <ol>
+        <li><a href="#frontend-routing">Routing con lazy loading</a></li>
+        <li><a href="#frontend-auth">Interceptor HTTP y AuthService</a></li>
+        <li><a href="#frontend-apiservice">ApiService y ApiResponse&lt;T&gt;</a></li>
+        <li><a href="#frontend-charts">Charts con ng2-charts v7</a></li>
+        <li><a href="#frontend-build">Cómo se construye y empaqueta</a></li>
+      </ol>
+    </li>
+    <li><a href="#deploy">Cómo desplegar / arrancar</a></li>
+    <li><a href="#traps">Trampas conocidas y cómo evitarlas</a></li>
+    <li><a href="#glossary">Glosario rápido</a></li>
+  </ol>
+</div>
+
+<!-- ====================================================== -->
+<h2 id="vision">1. Visión general del sistema</h2>
+
+<div class="callout">
+  <span class="tag devops">DEVOPS</span>
+  <strong>Qué es esto, en una línea:</strong> un SaaS multi-tenant para talleres mecánicos.
+  Un backend Spring Boot sirve todo (API + frontend empaquetado) en una sola URL.
+</div>
+
+<ul>
+  <li><strong>Puerto:</strong> <code>8586</code> (cambia en <code>application.properties</code>)</li>
+  <li><strong>Perfil activo:</strong> <code>dev</code> → <strong>H2 en memoria</strong> (al arrancar, el seeder crea datos demo)</li>
+  <li><strong>Credenciales seed:</strong> <code>test@gmail.com</code> / <code>password</code> (busca <code>DatabaseSeeder.TEST_EMAIL</code>)</li>
+  <li><strong>Frontend:</strong> Angular 19 SPA, embebida en <code>src/main/resources/static/</code> y servida por Spring Boot</li>
+  <li><strong>Otro proyecto conviviendo:</strong> <code>prjcomidalpaso</code> (restaurantes) en :8080 — no se mezclan</li>
+</ul>
+
+<h2 id="stack">2. Stack técnico</h2>
+
+<table>
+  <thead><tr><th>Capa</th><th>Tecnología</th><th>Versión</th><th>Por qué</th></tr></thead>
+  <tbody>
+    <tr><td>Backend</td><td>Java</td><td>17 (LTS)</td><td>Records, switch expressions, lo que pide Spring Boot 3.5</td></tr>
+    <tr><td>Backend</td><td>Spring Boot</td><td>3.5.6</td><td>Web + Data JPA + Security + Validation preconfigurados</td></tr>
+    <tr><td>Backend</td><td>Hibernate / JPA</td><td>6.6</td><td>Mapeo objeto-relacional; <code>ddl-auto=update</code></td></tr>
+    <tr><td>Backend</td><td>H2 (dev) / MySQL 8 (mysql profile)</td><td>—</td><td>H2 permite desarrollar sin instalar nada</td></tr>
+    <tr><td>Seguridad</td><td>JWT (jjwt)</td><td>0.12.6</td><td>Stateless, escalable horizontalmente</td></tr>
+    <tr><td>Frontend</td><td>Angular</td><td>19</td><td>Standalone components, signals, lazy loading</td></tr>
+    <tr><td>Frontend</td><td>ng2-charts + chart.js</td><td>7.0.0</td><td>Charts de barras y donut del dashboard</td></tr>
+    <tr><td>Frontend</td><td>TailwindCSS</td><td>v3</td><td>Utility-first, sin escribir CSS</td></tr>
+    <tr><td>Build FE</td><td>Angular CLI + pnpm</td><td>—</td><td>pnpm por preferencia</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<!-- ====================================================== -->
+<h2 id="backend">3. Backend — arquitectura hexagonal</h2>
+
+<div class="callout note">
+  <span class="tag backend">BACKEND</span>
+  <strong>Lo más importante del backend:</strong> tiene <em>11 bounded contexts</em> (carpetas independientes dentro de <code>com.utp.myapp</code>), cada uno sigue el mismo molde de 4 capas.
+</div>
+
+<h3 id="backend-bounded">3.1 Los 11 bounded contexts</h3>
+
+<p>
+  Cada contexto vive en <code>src/main/java/com/utp/myapp/&lt;nombre&gt;/</code>.
+  Crucial: <strong>los contextos no se importan entre sí directamente</strong>.
+  La composición (un caso de uso que necesita leer del contexto <em>reminder</em>) se hace vía
+  composición de beans en el contexto que llama, no con <code>import</code>.
+</p>
+
+<table>
+  <thead><tr><th>Contexto</th><th>Responsabilidad</th><th>Endpoint raíz</th></tr></thead>
+  <tbody>
+    <tr><td><code>auth</code></td><td>Login, register, refresh, hashing, JWT</td><td><code>/api/auth/*</code></td></tr>
+    <tr><td><code>tenant</code></td><td>Talleres (tenant), su config</td><td><code>/api/tenant/*</code></td></tr>
+    <tr><td><code>sales</code></td><td>Clientes y sus direcciones</td><td><code>/api/customers</code></td></tr>
+    <tr><td><code>vehicle</code></td><td>Vehículos, imágenes, kilometraje</td><td><code>/api/vehicles</code></td></tr>
+    <tr><td><code>workorder</code></td><td>Órdenes de trabajo y presupuestos</td><td><code>/api/work-orders</code></td></tr>
+    <tr><td><code>reminder</code></td><td>Recordatorios de mantenimiento</td><td><code>/api/reminders</code></td></tr>
+    <tr><td><code>catalog</code></td><td>Repuestos / categorías de partes</td><td><code>/api/catalog/parts</code></td></tr>
+    <tr><td><code>analytics</code></td><td>Stats para el dashboard</td><td><code>/api/analytics/*</code></td></tr>
+    <tr><td><code>whatsapp</code></td><td>Envío + recepción de mensajes vía Meta</td><td><code>/api/whatsapp/*</code> + <code>/api/webhook/*</code></td></tr>
+    <tr><td><code>publicapi</code></td><td>Landing pública (sin auth)</td><td><code>/api/public/*</code></td></tr>
+    <tr><td><code>shared</code></td><td>Cross-cutting: response, errors, security, security filters, tenant filter, etc.</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<h3 id="backend-layers">3.2 Las 4 capas (el molde hexagonal)</h3>
+
+<p>Cada contexto (excepto <code>shared</code> y <code>publicapi</code>) sigue este molde:</p>
+
+<pre><code>&lt;contexto&gt;/
+├─ domain/
+│  ├─ model/
+│  │  ├─ aggregates/        # Customer, WorkOrder, Reminder, Tenant, Vehicle...
+│  │  ├─ valueobjects/       # Address, Email, TenantId (records inmutables)
+│  │  └─ exceptions/         # InvalidCredentialsException, etc.
+│  └─ repository/            # Solo INTERFACES (puertos de salida)
+│
+├─ application/              # opcional — algunos contextos son pequeños y no lo usan
+│  ├─ command/               # CreateCustomerCommand, UpdateCustomerCommand...
+│  ├─ query/                 # GetCustomerByIdQuery, SearchCustomersQuery...
+│  ├─ handler/               # CreateCustomerCommandHandler (un handler por command/query)
+│  ├─ dto/                   # CustomerDto, CustomerSummaryDto (lo que viaja por HTTP)
+│  └─ assembler/              # CustomerAssembler (convierte Domain ↔ DTO)
+│
+├─ domain OR interfaces/     # si el contexto es simple, los controllers viven aquí directo
+│  └─ rest/                  # CustomerController, etc.
+│
+└─ infraestructure/
+   ├─ persistence/jpa/
+   │  ├─ entities/           # CustomerEntity (modelo JPA)
+   │  ├─ mappers/             # CustomerMapper (Entity ↔ Aggregate)
+   │  ├─ adapters/            # CustomerRepositoryAdapter (implementa ICustomerRepository)
+   │  └─ repositories/        # JPACustomerRepository (interfaz Spring Data)
+   └─ security/                # JwtTokenProvider, SecurityConfig, JwtAuthenticationFilter
+</code></pre>
+
+<div class="callout">
+  <strong>La regla cardinal:</strong> las dependencias apuntan <strong>hacia adentro</strong>.
+  El <code>domain</code> no sabe nada de Spring, JPA, ni HTTP.
+  Si necesitas importar algo de <code>org.springframework</code> en un archivo de <code>domain/</code>, algo está mal.
+</div>
+
+<h3 id="backend-endpoints">3.3 Endpoints REST completos</h3>
+
+<h4>Auth (<code>/api/auth/*</code>) — todos públicos</h4>
+<table>
+  <thead><tr><th>Método</th><th>Path</th><th>Body</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr><td>POST</td><td><code>/api/auth/register</code></td><td><code>{email, password, businessName, phone, role}</code></td><td>Crea usuario + tenant, devuelve JWT + refresh token</td></tr>
+    <tr><td>POST</td><td><code>/api/auth/login</code></td><td><code>{email, password}</code></td><td>Devuelve JWT + refresh token + datos del usuario + tenant</td></tr>
+    <tr><td>POST</td><td><code>/api/auth/refresh</code></td><td><code>{refreshToken}</code></td><td>Intercambia un refresh token válido por un nuevo par. Rechaza access tokens con error claro</td></tr>
+  </tbody>
+</table>
+
+<h4>Recursos (<code>/api/*</code>) — requieren JWT salvo los marcados con <span class="pill ok">público</span></h4>
+<table>
+  <thead><tr><th>Path</th><th>Métodos</th></tr></thead>
+  <tbody>
+    <tr><td><code>/api/customers</code></td><td>GET (list, search <code>?query=&amp;page=&amp;size=</code>), GET <code>/{id}</code>, POST, PUT <code>/{id}</code>, DELETE <code>/{id}</code></td></tr>
+    <tr><td><code>/api/vehicles</code></td><td>GET, GET <code>/{id}</code>, POST, DELETE <code>/{id}</code>, POST <code>/{id}/images</code></td></tr>
+    <tr><td><code>/api/work-orders</code></td><td>GET, POST, GET <code>/{id}</code>, GET <code>/vehicle/{vehicleId}</code></td></tr>
+    <tr><td><code>/api/reminders</code></td><td>GET, POST, GET <code>/{id}</code>, DELETE <code>/{id}</code></td></tr>
+    <tr><td><code>/api/catalog/parts</code></td><td>GET, GET <code>/{id}</code>, GET <code>/search</code>, POST</td></tr>
+    <tr><td><code>/api/tenant</code></td><td>GET, PUT</td></tr>
+  </tbody>
+</table>
+
+<h4>Público y webhooks — sin auth, sin token</h4>
+<table>
+  <thead><tr><th>Path</th><th>Método</th><th>Uso</th></tr></thead>
+  <tbody>
+    <tr><td><code>/api/public/tenant</code></td><td>GET</td><td>Landing page (info del primer tenant)</td></tr>
+    <tr><td><code>/api/public/categories</code></td><td>GET</td><td>Landing page (categorías raíz)</td></tr>
+    <tr><td><code>/api/webhook/whatsapp</code></td><td>GET, POST</td><td>Meta envía eventos aquí (verificación + recepción)</td></tr>
+    <tr><td><code>/api/analytics/dashboard</code></td><td>GET</td><td>Stats agregadas (KPIs del dashboard)</td></tr>
+    <tr><td><code>/api/analytics/status-summary</code></td><td>GET</td><td>Resumen de estados</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>Decisión de seguridad a notar:</strong> en <code>SecurityConfig</code> la regla
+  <code>!request.getRequestURI().startsWith("/api/")</code> abre todas las rutas que NO empiezan con <code>/api/</code>.
+  En teoría eso da acceso público al SPA — pero como el SPA solo expone /login, /register, y bajo /app/**,
+  la auth real la hace el <code>AuthGuard</code> del frontend (no mira <code>window</code> en el JVM).
+  Si añades endpoints administrativos en <code>/admin/*</code> sin prefijo <code>/api/</code>, considera endurecer esta regla.
+</div>
+
+<h3 id="backend-shared">3.4 El paquete <code>shared</code></h3>
+
+<p>Es lo que todos los contextos comparten. Sus piezas importantes:</p>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Rol</th></tr></thead>
+  <tbody>
+    <tr><td><code>shared/infraestructure/web/ApiResponse.java</code></td><td>Wrapper estándar de TODA respuesta HTTP: <code>{success, message, data, timestamp}</code>. Los handlers la devuelven; el ApiService del frontend extrae <code>.data</code></td></tr>
+    <tr><td><code>shared/infraestructure/web/GlobalExceptionHandler.java</code></td><td>@RestControllerAdvice central: convierte DomainException / EntityNotFoundException / IllegalArgumentException a ApiResponse con el HTTP code apropiado</td></tr>
+    <tr><td><code>shared/infraestructure/config/StaticResourcesConfig.java</code></td><td>(Marcador) — la lógica real está en pom.xml y arranca Spring Boot StaticResources</td></tr>
+    <tr><td><code>shared/infraestructure/config/SpaForwardController.java</code></td><td>Para cualquier GET <code>/app/**</code>, <code>/login</code>, <code>/register</code>, <code>/error</code> → sirve el <code>index.html</code> del frontend (Angular Router se encarga del resto)</td></tr>
+    <tr><td><code>shared/infraestructure/config/DatabaseSeeder.java</code></td><td>@Profile("dev", "mysql") — crea el usuario seed, 3 clientes, 3 vehículos, 3 órdenes, 2 recordatorios</td></tr>
+    <tr><td><code>shared/infraestructure/config/TenantContext.java</code></td><td>ThreadLocal para pasar el tenantId entre capas sin pasarlo como parámetro</td></tr>
+    <tr><td><code>shared/infraestructure/config/TenantFilter.java</code></td><td>Lee el <code>X-Tenant-ID</code> header y lo pone en TenantContext para cada request</td></tr>
+    <tr><td><code>shared/domain/model/aggregates/AuditableAggregateRoot.java</code></td><td>Clase base con <code>createdAt</code>, <code>updatedAt</code>, <code>version</code> (Optimistic Locking). Todos los agregados con @MappedSuperclass la extienden</td></tr>
+  </tbody>
+</table>
+
+<h3 id="backend-auth">3.5 Cómo funciona la auth JWT</h3>
+
+<p>El flujo es clásico pero hay <strong>dos token types</strong> en juego:</p>
+
+<ol>
+  <li>El usuario hace <code>POST /api/auth/login</code> con email+password.</li>
+  <li>El <code>LoginCommandHandler</code> valida, genera dos tokens:
+     <ul>
+       <li><strong>Access token</strong> (24h): lleva <code>tenantId</code>, <code>role</code>, <code>userId</code>. Es el que va en cada request.</li>
+       <li><strong>Refresh token</strong> (7d): lleva <code>"type": "REFRESH"</code>. Sirve solo para renovar.</li>
+     </ul>
+  </li>
+  <li>El <code>JwtAuthenticationFilter</code> extrae el header <code>Authorization: Bearer ...</code>, valida firma+expiración, y rellena el <code>SecurityContext</code> con el user.</li>
+  <li>Si la ruta requiere auth y no hay token, devuelve 401.</li>
+</ol>
+
+<p>Si necesitas añadir un nuevo endpoint <strong>protegido</strong>, solo anota con <code>@PreAuthorize</code> o déjalo bajo <code>anyRequest().authenticated()</code> (que es el default en <code>SecurityConfig</code>).</p>
+
+<h3 id="backend-multi">3.6 Multi-tenant — cómo se aísla la data</h3>
+
+<p>Real multi-tenancy por columna <code>tenant_id</code>. El aislamiento se hace en <strong>dos puntos</strong>:</p>
+
+<ol>
+  <li><strong>Capa de aplicación:</strong> el <code>JwtTokenProvider</code> mete el <code>tenantId</code> en el access token.</li>
+  <li><strong>Capa de JPA:</strong> el <code>CustomerRepositoryAdapter</code> (y similares) construyen queries con <code>findByTenantId(tenantId, ...)</code> — <strong>siempre</strong> filtran por tenant.</li>
+</ol>
+
+<div class="callout err">
+  <strong>NO te confíes.</strong> Si añades un nuevo endpoint y usas <code>findAll()</code> en vez de filtrar por tenant, devuelves datos de TODOS los tenants. Cada adaptador tiene su propia <code>findByTenantId(...)</code> — verifica que la use.
+</div>
+
+<p>La <code>TenantContext</code> (ThreadLocal) es inyectada por <code>TenantFilter</code> y consumida por <code>TenantInterceptor</code> cuando un handler lo pide. No abuses: la mayor parte del tiempo se pasa el tenantId explícito.</p>
+
+<h3 id="backend-cqrs">3.7 Patrón CQRS — los handlers</h3>
+
+<p>En cada comando/query hay <strong>una clase Command (record)</strong> + <strong>un Handler (@Service)</strong> + opcionalmente <strong>Assembler (DTO ↔ Domain)</strong>:</p>
+
+<pre><code>// application/command/CreateCustomerCommand.java
+@Getter @RequiredArgsConstructor @Builder
+public class CreateCustomerCommand {
+    private final String name;
+    private final String lastName;
+    private final String dni;
+    private final String email;
+    private final String phone;
+    private final AddressDto address;
+}
+
+// application/handler/CreateCustomerCommandHandler.java
+@Service
+public class CreateCustomerCommandHandler {
+    @Transactional
+    public CustomerDto handle(CreateCustomerCommand cmd) {
+        Customer c = assembler.toDomainCreate(cmd);
+        c = customerRepo.insert(c);
+        return assembler.toDto(c);
+    }
+}
+</code></pre>
+
+<p>El <strong>CustomerController</strong> solo arma el Command y llama al handler:</p>
+
+<pre><code>@PostMapping
+public ResponseEntity&lt;ApiResponse&lt;CustomerDto&gt;&gt; create(
+        @RequestBody CreateCustomerCommand command) {
+    CustomerDto result = createHandler.handle(command);
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.created(result));
+}
+</code></pre>
+
+<p>Si añades una nueva operación de cliente, creas <code>UpdateXxxCommand.java</code> + <code>UpdateXxxCommandHandler.java</code>. El controller solo crece en líneas de wiring.</p>
+
+<hr>
+
+<!-- ====================================================== -->
+<h2 id="frontend">4. Frontend Angular — estructura</h2>
+
+<h3 id="frontend-routing">4.1 Routing con lazy loading</h3>
+
+<p><code>src/app/app.routes.ts</code> define 3 grupos de rutas:</p>
+
+<ul>
+  <li><code>''</code> → <code>HomeComponent</code> (landing, ruta pública)</li>
+  <li><code>login</code>, <code>register</code> → auth screens (públicas)</li>
+  <li><code>app</code> → <code>MainLayoutComponent</code> (con sidebar/header, requiere auth vía <code>AuthGuard</code>) que carga perezoso: <code>dashboard</code>, <code>customers</code>, <code>vehicles</code>, <code>work-orders</code>, <code>reminders</code>, <code>analytics</code>, <code>catalog</code>, <code>settings</code></li>
+</ul>
+
+<p>Cada componente se carga con:</p>
+
+<pre><code>loadComponent: () =&gt; import('./features/customers/customers.component').then(m =&gt; m.CustomersComponent)
+</code></pre>
+
+<p>Resultado en el bundle: el chunk de customers, vehicles, etc. se descarga <strong>cuando entras a esa ruta</strong>, no en la primera carga. Útil para móviles.</p>
+
+<h3 id="frontend-auth">4.2 AuthInterceptor — la clave del transparente</h3>
+
+<p>Cada vez que un componente hace <code>api.get('/customers')</code>, el interceptor añade <code>Authorization: Bearer &lt;token&gt;</code> automáticamente. El componente nunca concatena headers:</p>
+
+<pre><code>intercept(req, next) {
+  const token = this.authService.getToken();
+  if (token) {
+    const cloned = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` }
+    });
+    return next.handle(cloned);
+  }
+  return next.handle(req);
+}
+</code></pre>
+
+<h3 id="frontend-apiservice">4.3 ApiService — la única forma de hablar con la API</h3>
+
+<p>La regla es: <strong>todos</strong> los requests pasan por <code>api.service.ts</code>, que hace <code>map(res =&gt; res.data)</code> automáticamente (recordá que el backend envuelve todo en <code>{success, message, data, timestamp}</code>):</p>
+
+<pre><code>get&lt;T&gt;(endpoint: string, params?: Record&lt;string, any&gt;): Observable&lt;T&gt; {
+    return this.http.get&lt;ApiResponse&lt;T&gt;&gt;(`${environment.apiUrl}${endpoint}`, ...)
+      .pipe(map(res =&gt; res.data));
+}
+</code></pre>
+
+<p>Si en un componente ves <code>this.http.get(...)</code> directamente — estás haciendo mal. Usa siempre <code>this.api.get(...)</code> para que la desestructuración de la respuesta sea correcta.</p>
+
+<h3 id="frontend-charts">4.4 Charts con ng2-charts v7 — el fix clave</h3>
+
+<div class="callout err">
+  <strong>Bug conocido:</strong> con ng2-charts 7+, si te olvidas de <code>provideCharts(withDefaultRegisterables())</code> en <code>app.config.ts</code>, los charts se renderizan vacíos sin error visible. Los controllers (bar, doughnut) y scales (linear) no se registran con Chart.js.
+</div>
+
+<p><code>src/app/app.config.ts</code> debe tener:</p>
+
+<pre><code>import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+
+providers: [
+  ...,
+  <span class="pill ok">provideCharts(withDefaultRegisterables()),</span>
+  ...
+]
+</code></pre>
+
+<p>Sin esa línea → pantallas en blanco con tamaño 595×288 (toman el espacio) pero 0 píxeles pintados. Síntoma idéntico a "el backend no devuelve datos" pero en realidad es la librería.</p>
+
+<h3 id="frontend-build">4.5 Cómo se construye y empaqueta</h3>
+
+<ol>
+  <li><code>pnpm run build</code> en <code>frontend/</code> genera <code>dist/browser/</code> (~500KB de bundle + chunks lazy).</li>
+  <li>El plugin <code>maven-resources-plugin</code> en <code>pom.xml</code> <strong>copia automáticamente</strong> <code>frontend/dist/browser/*</code> → <code>src/main/resources/static/</code> en cada <code>mvn package</code>.</li>
+  <li>Spring Boot sirve esos archivos en la raíz del JAR.</li>
+  <li>El <code>SpaForwardController</code> forwarda las rutas SPA a <code>index.html</code> para que Angular Router tome el control.</li>
+</ol>
+
+<div class="callout warn">
+  <strong>Detalle:</strong> el plugin <strong>agrega encima</strong> pero <strong>no limpia</strong> archivos obsoletos. Si renombras <code>main-XXX.js</code>, el viejo queda en <code>src/main/resources/static/</code> y se sube al JAR. Hay que limpiar manualmente con <code>rm src/main/resources/static/main-OLD.js</code> o usar <code>mvn clean</code>. Si no, el navegador cachea el viejo.
+</div>
+
+<hr>
+
+<!-- ====================================================== -->
+<h2 id="deploy">5. Cómo desplegar / arrancar</h2>
+
+<h3>Build completo desde cero</h3>
+
+<pre><code><span class="hljs-keyword">cd</span> frontend
+pnpm install           # solo si no hay node_modules
+pnpm run build         # produce dist/browser/
+
+<span class="hljs-comment"># Regresar y compilar backend (incluye el bundle Angular)</span>
+cd ..
+mvn clean package      # tarda ~50s el primer build
+
+<span class="hljs-comment"># Arrancar</span>
+java -jar target/sistema-innovador-0.0.1-SNAPSHOT.jar
+</code></pre>
+
+<p>Por defecto levanta en <strong>:8586</strong>, perfil <code>dev</code> (H2 en memoria).</p>
+
+<h3>Para producción con MySQL</h3>
+
+<pre><code>java -jar -Dspring.profiles.active=mysql \
+     target/sistema-innovador-0.0.1-SNAPSHOT.jar
+</code></pre>
+
+<p>Requiere las credenciales MySQL en <code>application-mysql.properties</code>.</p>
+
+<h3>Exponer por IPv6 (Windows)</h3>
+
+<pre><code><span class="hljs-comment"># PowerShell (admin): abrir firewall TCP 8586</span>
+New-NetFirewallRule -DisplayName "SistemaInnovador 8586" `
+  -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8586 -Profile Any
+
+<span class="hljs-comment"># Conocer tu IPv6 pública actual</span>
+curl https://api64.ipify.org
+
+<span class="hljs-comment"># Compartir con alguien: http://[&lt;esa IPv6&gt;]:8586/</span>
+</code></pre>
+
+<div class="callout warn">
+  <strong>La IPv6 pública rota</strong> en Windows cada cierto tiempo. Si dejas de verlo, ejecuta <code>curl https://api64.ipify.org</code> para ver la actual y actualiza la URL. Para evitarlo, desactiva IPv6 privacy: <code>netsh interface ipv6 set privacy state=disabled</code>.
+</div>
+
+<hr>
+
+<!-- ====================================================== -->
+<h2 id="traps">6. Trampas conocidas</h2>
+
+<div class="grid g2">
+  <div class="card" style="border-left:3px solid var(--err)">
+    <h4><span class="pill err">bug</span> Customer CRUD falla con city NOT NULL</h4>
+    <p>Si rotas al pasado (commit anterior con <code>@Column(nullable=false)</code> en <code>AddressEmbeddable</code>), el POST de customers falla incluso si el address está vacío. <strong>Fix mantenido:</strong> las 4 columnas de AddressEmbeddable tienen <code>@Column</code> sin <code>nullable</code>, y el <code>record Address</code> en domain no lanza excepciones.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--err)">
+    <h4><span class="pill err">bug</span> Refresh token devuelve success=false</h4>
+    <p>Si rotas a un commit antes de implementar <code>POST /api/auth/refresh</code>, el endpoint no existe. El <code>SecurityConfig</code> lo lista en <code>permitAll</code> pero el controller no existía hasta que se añadió <code>RefreshTokenCommandHandler</code>.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--err)">
+    <h4><span class="pill err">bug</span> Charts vacíos en dashboard</h4>
+    <p>Si <code>provideCharts(withDefaultRegisterables())</code> no está en <code>app.config.ts</code>, los charts se renderizan como canvas vacíos de tamaño 595×288 sin errores en consola. Síntoma sutil.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--warn)">
+    <h4><span class="pill warn">atención</span> AddBundle sin limpiar viejos</h4>
+    <p>Después de un <code>pnpm run build</code>, si el nombre del bundle cambia (p. ej. <code>main-ZFS.js</code> por uno nuevo), los archivos viejos quedan en <code>src/main/resources/static/</code>. <code>mvn clean</code> o borrado manual antes de <code>mvn package</code>.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--warn)">
+    <h4><span class="pill warn">atención</span> IPv6 rota</h4>
+    <p>Windows rota direcciones IPv6 cada cierto tiempo. Si la URL deja de funcionar, ejecuta <code>curl https://api64.ipify.org</code> y actualiza.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--note)">
+    <h4><span class="pill note">nota</span> open-in-view=false</h4>
+    <p>En <code>application.properties</code> está <code>spring.jpa.open-in-view=false</code>. Esto evita queries a la BD en el momento de serializar el response (un anti-patrón clásico de JPA). <strong>Implicación:</strong> si tu handler devuelve un agregado con relaciones lazy y luego en el DTO accedes a ellas, te va a tirar <code>LazyInitializationException</code>. La solución es cargar las relaciones en el @Transactional handler, no en el assembler.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--note)">
+    <h4><span class="pill note">nota</span> ddl-auto=update</h4>
+    <p>Hibernate crea y actualiza tablas automáticamente. <strong>En dev está bien.</strong> En prod debes usar migraciones (Flyway/Liquibase). Hoy por hoy cada arranque del backend es seguro contra pérdida de data — pero los índices no se optimizan.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--ok)">
+    <h4><span class="pill ok">truco</span> CORS solo para localhost:4200</h4>
+    <p>En <code>SecurityConfig.corsConfigurationSource()</code> solo está <code>http://localhost:4200</code>. Si abres el frontend desde otra IP, CORS bloqueará. Solución: usar el mismo origen del backend (como está configurado en prod) o agregar la IP a esa lista.</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ====================================================== -->
+<h2 id="glossary">7. Glosario rápido</h2>
+
+<table>
+  <thead><tr><th>Término</th><th>Significado</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Aggregate Root</strong></td><td>Una entidad con identidad propia (Customer, WorkOrder). Se carga y persiste completa, no por partes. Vive en <code>domain/model/aggregates/</code>.</td></tr>
+    <tr><td><strong>Value Object</strong></td><td>Dato sin identidad, inmutable. <code>Address</code>, <code>Email</code>, <code>TenantId</code>, <code>Money</code>. Son records Java.</td></tr>
+    <tr><td><strong>Repository (interface)</strong></td><td>Puerto de salida del dominio. Define QUÉ se puede hacer con los agregados, no CÓMO. Vive en <code>domain/model/repository/</code>. Lo implementa el adaptador en <code>infraestructure</code>.</td></tr>
+    <tr><td><strong>Adaptador</strong></td><td>Implementación JPA del repositorio. Convierte Aggregate ↔ Entity ↔ fila SQL. <em>Mapea</em> datos pero nunca toca el dominio.</td></tr>
+    <tr><td><strong>Handler (CQRS)</strong></td><td>@Service que ejecuta una intención (crear/actualizar/buscar). Un Command o Query → un Handler.</td></tr>
+    <tr><td><strong>Assembler</strong></td><td>Convierte Domain ↔ DTO. Los DTOs son los que viajan por HTTP.</td></tr>
+    <tr><td><strong>PermitAll / authenticated</strong></td><td>Reglas en <code>SecurityConfig</code>. Cualquier ruta no listada explícitamente cae en <code>anyRequest().authenticated()</code>.</td></tr>
+    <tr><td><strong>Stub de seed (H2 dev)</strong></td><td>Usuario <code>test@gmail.com</code> / <code>password</code>, tenant <code>test-tenant-001</code>, con 3 clientes/vehículos y órdenes variadas. Solo existe si arrancas con perfil dev (que es el default).</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<p class="meta" style="margin-top:40px">
+  Documento de referencia. Si encuentras contradicciones con el código actual,
+  el código es la verdad.
+  Los hechos concretos (puertos, paths, credenciales) se citan con su fuente (archivo, línea); las decisiones de diseño se explican como guía, no como verdad absoluta.
+</p>
+
+</body>
+</html>
