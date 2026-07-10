@@ -9,6 +9,13 @@ import java.math.BigDecimal;
  * so that the API, the landing pricing page, and the upgrade flow all read from
  * the same source of truth. The plan stored in the Tenant aggregate is just
  * the enum name; everything else is derived from here.
+ *
+ * Pricing rationale (June 2026): the product targets micro and small
+ * automotive workshops in Peru and similar LATAM markets. The previous
+ * S/99 / S/249 levels were too high for that audience (most workshops
+ * run on monthly cash flow under S/5k). The new tiers are S/0 / S/29 /
+ * S/79, with caps tuned for the typical shop size (one or two mechanics,
+ * a few hundred customers).
  */
 public enum SubscriptionPlan {
     FREE(
@@ -16,12 +23,12 @@ public enum SubscriptionPlan {
         "Para empezar a probar el sistema.",
         new BigDecimal("0.00"),
         "soles",
-        25,       // max customers
-        50,       // max work orders / month
-        0,        // max admin users
-        false,    // whatsapp enabled?
-        false,    // analytics enabled?
-        false,    // priority support?
+        25,
+        50,
+        0,
+        false,
+        false,
+        false,
         new String[]{
             "Hasta 25 clientes",
             "Hasta 50 órdenes de trabajo / mes",
@@ -31,19 +38,19 @@ public enum SubscriptionPlan {
     ),
     BASIC(
         "Basic",
-        "Para talleres que ya están en operación.",
-        new BigDecimal("99.00"),
+        "Para talleres pequeños que ya están en operación.",
+        new BigDecimal("29.00"),
         "soles",
-        200,
-        1000,
-        3,
+        100,
+        300,
+        2,
         true,
         true,
         false,
         new String[]{
-            "Hasta 200 clientes",
-            "Hasta 1,000 órdenes / mes",
-            "Hasta 3 usuarios administradores",
+            "Hasta 100 clientes",
+            "Hasta 300 órdenes / mes",
+            "Hasta 2 usuarios administradores",
             "Notificaciones por WhatsApp (recordatorios)",
             "Dashboard de analítica con KPIs y charts",
             "Soporte por email en horario laboral"
@@ -52,21 +59,21 @@ public enum SubscriptionPlan {
     PREMIUM(
         "Premium",
         "Para talleres con varias sucursales o alto volumen.",
-        new BigDecimal("249.00"),
+        new BigDecimal("79.00"),
         "soles",
         Integer.MAX_VALUE,
         Integer.MAX_VALUE,
-        15,
+        5,
         true,
         true,
         true,
         new String[]{
             "Clientes ilimitados",
             "Órdenes ilimitadas",
-            "Hasta 15 usuarios administradores",
+            "Hasta 5 usuarios administradores",
             "WhatsApp: plantillas y respuestas automáticas",
             "Analítica avanzada + exportación a Excel",
-            "Soporte prioritario 24/7 por WhatsApp y teléfono",
+            "Soporte prioritario por WhatsApp y email",
             "Reportes personalizados bajo pedido"
         }
     );
@@ -114,14 +121,11 @@ public enum SubscriptionPlan {
 
     /**
      * Returns true if this plan is at least as feature-rich as `other`.
-     * Used by the upgrade/downgrade flow to know whether a tenant can use
-     * a given feature (e.g. "can this tenant send WhatsApp?").
      */
     public boolean isAtLeast(SubscriptionPlan other) {
         return this.ordinal() >= other.ordinal();
     }
 
-    /** Sentinel value used in UI for "unlimited" caps. */
     public String displayCustomersLimit() {
         return maxCustomers == Integer.MAX_VALUE ? "Ilimitados" : String.valueOf(maxCustomers);
     }

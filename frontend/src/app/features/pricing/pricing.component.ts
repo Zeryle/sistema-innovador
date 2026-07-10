@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Location } from '@angular/common';
 import { PublicApiService, PublicPlan } from '../../core/services/public-api.service';
 import { BillingService } from '../../core/services/billing.service';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-pricing',
@@ -217,11 +218,11 @@ export class PricingComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private publicApi: PublicApiService, private billing: BillingService, private router: Router, private location: Location) {}
+  constructor(private publicApi: PublicApiService, private billing: BillingService, private auth: AuthService, private router: Router, private location: Location) {}
 
   onChoose(code: 'FREE' | 'BASIC' | 'PREMIUM'): void {
     // Si está autenticado, va directo al checkout. Si no, al register.
-    if (localStorage.getItem('token')) {
+    if (this.auth.isLoggedIn()) {
       this.billing.startCheckout(code, '/billing/success', '/billing/cancel').subscribe({
         next: (checkout) => {
           console.log('[pricing.onChoose] checkout.url =', JSON.stringify(checkout.url));

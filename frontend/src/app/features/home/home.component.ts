@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PublicApiService, PublicCategory, PublicTenant } from '../../core/services/public-api.service';
+import { AuthService } from '../../core/auth/auth.service';
 
 interface ServiceCard {
   icon: string;
@@ -34,8 +35,14 @@ interface ValueProp {
           <a href="#contacto" class="hover:text-primary-600 transition">Contacto</a>
         </div>
         <div class="flex items-center gap-3">
-          <a routerLink="/login" class="px-4 py-2 text-sm font-medium text-primary-700 hover:bg-primary-50 rounded-lg transition">Iniciar sesión</a>
-          <a routerLink="/register" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg shadow-sm transition">Crear cuenta</a>
+          <ng-container *ngIf="!isLoggedIn; else navAuthed">
+            <a routerLink="/login" class="px-4 py-2 text-sm font-medium text-primary-700 hover:bg-primary-50 rounded-lg transition">Iniciar sesión</a>
+            <a routerLink="/register" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg shadow-sm transition">Crear cuenta</a>
+          </ng-container>
+          <ng-template #navAuthed>
+            <a routerLink="/app/dashboard" class="px-4 py-2 text-sm font-medium text-primary-700 hover:bg-primary-50 rounded-lg transition">Ir al dashboard</a>
+            <a routerLink="/pricing" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg shadow-sm transition">Ver planes</a>
+          </ng-template>
         </div>
       </nav>
     </header>
@@ -62,6 +69,7 @@ interface ValueProp {
             sin salir de casa. Gestión profesional para talleres y sus clientes.
           </p>
           <div class="flex flex-wrap gap-3">
+            <ng-container *ngIf="!isLoggedIn; else heroAuthed">
             <a routerLink="/login" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary-600 text-white font-semibold shadow-lg shadow-primary-600/30 hover:bg-primary-700 hover:-translate-y-0.5 transition">
               Ingresar al taller
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -69,6 +77,16 @@ interface ValueProp {
             <a routerLink="/register" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-semibold hover:border-primary-300 hover:text-primary-700 transition">
               Registrar mi taller
             </a>
+          </ng-container>
+          <ng-template #heroAuthed>
+            <a routerLink="/app/dashboard" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary-600 text-white font-semibold shadow-lg shadow-primary-600/30 hover:bg-primary-700 hover:-translate-y-0.5 transition">
+              Ir al dashboard
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <a routerLink="/pricing" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-semibold hover:border-primary-300 hover:text-primary-700 transition">
+              Ver planes
+            </a>
+          </ng-template>
           </div>
           <div class="mt-10 flex items-center gap-6 text-sm text-gray-500">
             <div class="flex items-center gap-2"><span class="text-green-500">●</span> Servicio garantizado</div>
@@ -171,7 +189,7 @@ interface ValueProp {
                   }
                 </div>
               }
-              <a routerLink="/login" class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700">
+              <a [routerLink]="isLoggedIn ? '/app/catalog' : '/login'" class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700">
                 Ver catálogo
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </a>
@@ -214,12 +232,22 @@ interface ValueProp {
           Crea tu cuenta gratis y empieza a gestionar clientes, vehículos y órdenes en minutos.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <a routerLink="/register" class="px-8 py-3 bg-white text-primary-700 font-bold rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition">
-            Crear cuenta gratis
-          </a>
-          <a routerLink="/login" class="px-8 py-3 bg-primary-600/30 backdrop-blur text-white font-bold rounded-xl border border-white/30 hover:bg-primary-600/50 transition">
-            Ya tengo cuenta
-          </a>
+          <ng-container *ngIf="!isLoggedIn; else finalAuthed">
+            <a routerLink="/register" class="px-8 py-3 bg-white text-primary-700 font-bold rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition">
+              Crear cuenta gratis
+            </a>
+            <a routerLink="/login" class="px-8 py-3 bg-primary-600/30 backdrop-blur text-white font-bold rounded-xl border border-white/30 hover:bg-primary-600/50 transition">
+              Ya tengo cuenta
+            </a>
+          </ng-container>
+          <ng-template #finalAuthed>
+            <a routerLink="/app/dashboard" class="px-8 py-3 bg-white text-primary-700 font-bold rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition">
+              Ir al dashboard
+            </a>
+            <a routerLink="/pricing" class="px-8 py-3 bg-primary-600/30 backdrop-blur text-white font-bold rounded-xl border border-white/30 hover:bg-primary-600/50 transition">
+              Ver planes
+            </a>
+          </ng-template>
         </div>
       </div>
     </section>
@@ -245,6 +273,7 @@ interface ValueProp {
   `
 })
 export class HomeComponent implements OnInit {
+  get isLoggedIn(): boolean { return this.auth.isLoggedIn(); }
   year = new Date().getFullYear();
   tenant: PublicTenant | null = null;
   categories: PublicCategory[] = [];
@@ -266,7 +295,7 @@ export class HomeComponent implements OnInit {
     { icon: '📊', title: 'Analítico', desc: 'Reportes de ingresos, fallas frecuentes y productividad.' }
   ];
 
-  constructor(private publicApi: PublicApiService) {}
+  constructor(private publicApi: PublicApiService, public auth: AuthService) {}
 
   ngOnInit(): void {
     this.publicApi.getTenant().subscribe({
