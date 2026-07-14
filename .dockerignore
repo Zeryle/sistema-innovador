@@ -1,0 +1,33 @@
+# Keep the build context small — excludes that don't belong inside the image
+.git
+.gitattributes
+.github
+.gitignore
+.idea
+.vscode
+.roomodes
+
+# Build output (jar is rebuilt inside the image, not copied)
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE / OS noise
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+backend.log*
+frontend.log*
+
+# Frontend build cache (rebuilt in the frontend Dockerfile)
+frontend/node_modules
+frontend/dist
+frontend/.angular
+
+# Docker files themselves (avoid recursive COPY surprises)
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+DEPLOY.md
+LICENSE

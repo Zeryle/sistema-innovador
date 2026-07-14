@@ -42,8 +42,11 @@ public class SecurityConfig {
                         .requestMatchers("/*.ico", "/*.png", "/*.svg", "/*.woff", "/*.woff2", "/*.ttf").permitAll()
                         .requestMatchers("/styles/**", "/chunk-*.js", "/main-*.js", "/polyfills-*.js").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
+                        // OpenAPI / Swagger UI (must be reachable without auth)
+                        .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers(request ->
-                            !request.getRequestURI().startsWith("/api/")).permitAll()
+                                !request.getRequestURI().startsWith("/api/")).permitAll()
                         // Public API enrutado
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/api/webhook/**").permitAll()

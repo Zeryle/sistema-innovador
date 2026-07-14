@@ -1,0 +1,67 @@
+# ============================================================================
+# AutoTaller local stack — backend + MySQL + (optional) frontend
+# ============================================================================
+# Usage:
+#   docker compose up --build          # start everything
+#   docker compose down -v             # stop and wipe DB
+#   docker compose logs -f backend     # tail backend logs
+# ============================================================================
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: autotaller-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: autotaller
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autotaller-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/autotaller?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      # WhatsApp mock mode by default; flip to "live" once you wire MetaCloudApi
+      WHATSAPP_MODE: mock
+    ports:
+      - "8586:8586"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8586/api/public/plans || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: autotaller-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:
+    driver: local
